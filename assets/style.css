@@ -1,0 +1,8 @@
+@import url(~/assets/rtl.css);
+.el-table * {
+  direction: rtl;
+  text-align: center;
+}
+a {
+  text-decoration: none;
+}

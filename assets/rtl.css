@@ -1,0 +1,34 @@
+* {
+  font-family: "jaz_bold", "Droid Arabic Kufi", sans-serif;
+}
+.rtl {
+  direction: rtl !important;
+}
+.el-icon-close {
+  right: 5px !important;
+}
+.el-form-item__label {
+  float: right;
+  padding: 0 0px 0 10px;
+}
+.section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.el-dialog__headerbtn {
+  right: auto;
+  left: 20px;
+}
+
+.el-form-item__error {
+  right: 10px;
+}
+
+.required {
+  color: #F56C6C;
+  color: red;
+}
+.el-dialog__footer {
+  text-align: left;
+}
