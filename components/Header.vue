@@ -3,7 +3,7 @@
     <div class="header-nav rtl">
      <span>
         <nuxt-link to="/" :class="{ activeLink: activeLink === '/' }">
-        <span class="el-submenu-text">رضاكم</span>
+        <span class="el-submenu-text">رضاااكم</span>
       </nuxt-link>
       <nuxt-link to="/users" :class="{ activeLink: activeLink === '/users' }">
         <span class="el-submenu-text">المستخدمين</span>
