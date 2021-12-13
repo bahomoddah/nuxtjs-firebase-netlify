@@ -1,24 +1,36 @@
 <template>
   <div class="rtl">
     <div class="header-nav rtl">
-     <span>
-        <nuxt-link to="/" :class="{ activeLink: activeLink === '/' }">
-        <span class="el-submenu-text">رضاااكم</span>
-      </nuxt-link>
-      <nuxt-link to="/users" :class="{ activeLink: activeLink === '/users' }">
-        <span class="el-submenu-text">المستخدمين</span>
-      </nuxt-link>
-      <nuxt-link to="/orgs" :class="{ activeLink: activeLink === '/orgs' }">
-        <span class="el-submenu-text">الجهات</span>
-      </nuxt-link>
-     </span>
       <span>
-        <span class="email"> {{ user.email }}</span>
-      <el-button type="primary" plain class="mr-25" @click="logout()">
-        <span class="flex">
-          <span class="p-5">تسجيل الخروج</span>
-        </span>
-      </el-button>
+        <nuxt-link to="/" :class="{ activeLink: activeLink === '/' }" class="btnLink">
+          <span class="el-submenu-text">رضاااكم</span>
+        </nuxt-link>
+        <nuxt-link to="/users" :class="{ activeLink: activeLink === '/users' }" class="btnLink">
+          <span class="el-submenu-text">المستخدمين</span>
+        </nuxt-link>
+        <nuxt-link to="/orgs" :class="{ activeLink: activeLink === '/orgs' }" class="btnLink">
+          <span class="el-submenu-text">الجهات</span>
+        </nuxt-link>
+      </span>
+      <span>
+        <el-dropdown @command="handleCommand">
+          <span>
+            <span>
+              <i class="el-icon-caret-bottom" />
+            </span>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="email">
+                {{ user.email }}
+            </el-dropdown-item>
+            <el-dropdown-item command="change_password">
+              نسيت كلمة المرور
+            </el-dropdown-item>
+            <el-dropdown-item command="logout" divided style="color: red;">
+              تسجيل الخروج
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </span>
     </div>
   </div>
@@ -43,12 +55,19 @@ export default {
       console.log("ee", e);
     },
     logout() {
-      this.$fire.auth.signOut().then(() => {
-        this.$store.commit("SET_USER", null);
-        this.$router.push({
-          path: "/login",
+      
+    },
+    async handleCommand (command) {
+      if (command === 'logout') {
+        this.$fire.auth.signOut().then(() => {
+          this.$store.commit("SET_USER", null);
+          this.$router.push({
+            path: "/login",
+          });
         });
-      });
+      } else if (command === 'change_password') {
+        this.$fire.auth.sendPasswordResetEmail(this.user.email)
+      }
     },
   },
   created() {
@@ -73,16 +92,13 @@ export default {
   display: inline-block;
   margin: 0 10px;
 }
-.activeLink {
-  color: #fff;
-  background-color: #12044d;
+.btnLink {  
   padding: 10px 20px;
   border-radius: 6px;
 }
-
-@media (max-width: 600px) {
-  .email {
-    display: none;
-  }
+.activeLink {
+  color: #fff;
+  background-color: #12044d;
 }
+
 </style>

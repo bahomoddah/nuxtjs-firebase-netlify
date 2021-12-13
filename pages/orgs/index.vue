@@ -11,6 +11,8 @@
             <span class="p-5">إضافة جهة</span>
           </span>
         </el-button>
+        
+        <!-- <input id="upload" type="file" class="file-input" accept=".xlsx, .xls" @change="importExcel" /> -->
       </h1>
     </div>
     <el-row :gutter="20">
@@ -80,13 +82,16 @@ export default {
     }
   },
   async fetch ({ store, params }) {
-    if (store.state.users === []) {
+    if (store.state.users.orgs === undefined) {
       await store.dispatch('fetchUsers')
     }
   },
   computed: {
-    OrganizationsTable () {
-      return this.$store.state.orgs
+    users () {
+      return this.$store.state.users
+    },
+    OrganizationsTable() {
+      return this.users.orgs
     }
   },
   methods: {
@@ -115,8 +120,39 @@ export default {
     },
     isInfoModalClosed (payload) {
       payload.value === true ? (this.update_info_dialog = false) : true
-      payload.clickedBtn === 'save' ? this.fetch() : ''
+      // payload.clickedBtn === 'save' ? this.fetch() : ''
     },
+    // importExcel(e) {
+    //   console.log('dd', e);
+    //   const { files } = e.target
+    //   if (!files.length) {
+    //     return
+    //   } else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
+    //     return alert('The upload format is incorrect. Please upload xls or xlsx format')
+    //   }
+    //   const fileReader = new FileReader()
+    //   const excelData = []
+    //   fileReader.onload = ev => {
+    //     // try {
+    //     const data = ev.target.result
+    //     const workbook = XLSX.read(data, {
+    //       type: 'binary'
+    //     })
+    //     const wsname = workbook.SheetNames[0] // Take the first sheet，wb.SheetNames[0] :Take the name of the first sheet in the sheets
+    //     const ws = XLSX.utils.sheet_to_json(workbook.Sheets[wsname]) // Generate JSON table content，wb.Sheets[Sheet名]    Get the data of the first sheet
+    //     // Edit data
+    //     for (let i = 0; i < ws.length; i++) {
+    //       excelData.push(ws[i])
+    //     }
+    //     console.log('data', excelData);
+    //     // } catch (e) {
+    //     //   return alert('Read failure!')
+    //     // }
+    //   }
+    //   fileReader.readAsBinaryString(files[0])
+    //   const input = document.getElementById('upload')
+    //   input.value = ''
+    // },
     async handleDelete (scope = -1) {
       await this.cancel(scope)
       await this.$store

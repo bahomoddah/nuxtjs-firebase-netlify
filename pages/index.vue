@@ -92,16 +92,19 @@ export default {
   },
 
   async fetch({ store, params }) {
-    if (store.state.users === []) {
+    if (store.state.users.users == undefined || store.state.users.orgs == undefined ) {
       await store.dispatch('fetchUsers')
     }
   },
   computed: {
+    users() {
+      return this.$store.state.users
+    },
     orgsTable() {
-      return this.$store.state.orgs;
+      return this.users.orgs;
     },
     usersTable() {
-      return this.$store.state.users;
+      return this.users.users;
     },
   },
   methods: {

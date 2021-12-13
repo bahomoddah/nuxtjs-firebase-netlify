@@ -227,7 +227,7 @@ a {
 }
 
 @media (max-width: 768px) {
-  .layout-container .container .view.login-page {
+  .container .view.login-page {
     margin-left: -5px;
     margin-right: -5px;
     max-width: calc(100% + 10px);

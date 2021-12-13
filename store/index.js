@@ -1,19 +1,21 @@
 import { Message } from "element-ui";
 export const state = () => ({
   user: null,
-  users: [],
-  orgs: [],
+  users: {}
 });
 export const mutations = {
   SET_USER(state, user) {
     state.user = user;
   },
   SET_USERS(state, users) {
-    state.users = users;
+    state.users.users = users;
   },
   SET_ORGS(state, orgs) {
-    state.orgs = orgs;
+    state.users.orgs = orgs;
   },
+  ADD_USER(state, user) {
+    user.type == 'org' ? state.users.orgs.push(user) : state.users.users.push(user)
+  }
 };
 export const actions = {
   alert({}, data) {
@@ -80,20 +82,22 @@ export const actions = {
         user_id: '5455'
       })
   },
-  async addUser({ dispatch }, payload) {
+  async addUser({ commit, dispatch }, payload) {
     await this.$fire.auth.createUserWithEmailAndPassword(
       payload.email,
       payload.password
     ).then((res) => {
-        const id = res.user.uid
-        this.$fire.firestore
-        .collection("users").doc(id).set({
+        const user = {
           name: payload.name,
           email: payload.email,
           type: payload.type,
-          user_id: id
-        }).then((sec) => {
-          console.log('ss', sec);
+          user_id: res.user.uid
+        }
+        this.$fire.firestore
+        .collection("users").doc(user.user_id).set({
+          ...user
+        }).then(() => {
+          commit("ADD_USER", user);
           dispatch('alert', {
             msg: 'تمت الإضافة بنجاح',
             type: 'success'
@@ -101,7 +105,7 @@ export const actions = {
         })
       })
   },
-  async editUser({ dispatch }, payload) {
+  async editUser({ commit, dispatch }, payload) {
     await this.$fire.firestore
       .collection("users").doc(payload.user_id).update({
         name: payload.name

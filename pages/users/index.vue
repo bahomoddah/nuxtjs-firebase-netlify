@@ -11,6 +11,12 @@
             <span class="p-5">إضافة مستخدم</span>
           </span>
         </el-button>
+        <el-button type="primary" plain class="mr-25" @click="exportUsers">
+          <span class="flex">
+            <img width="20" src="~/assets/images/users_w1.svg">
+            <span class="p-5">تصدير</span>
+          </span>
+        </el-button>
       </h1>
     </div>
     <el-row :gutter="20">
@@ -69,6 +75,7 @@
 </template>
 
 <script>
+import XLSX from 'xlsx'
 export default {
   name: 'Users',
   data () {
@@ -80,13 +87,16 @@ export default {
     }
   },
   async fetch ({ store, params }) {
-    if (store.state.users === []) {
+    if (store.state.users.users === undefined) {
       await store.dispatch('fetchUsers')
     }
   },
   computed: {
-    UsersTable () {
+    users () {
       return this.$store.state.users
+    },
+    UsersTable() {
+      return this.users.users
     }
   },
   methods: {
@@ -115,8 +125,16 @@ export default {
     },
     isInfoModalClosed (payload) {
       payload.value === true ? (this.update_info_dialog = false) : true
-      payload.clickedBtn === 'save' ? this.fetch() : ''
+      // payload.clickedBtn === 'save' ? this.fetch() : ''
     },
+    exportUsers() {
+			/* convert state to workbook */
+      const data = XLSX.utils.json_to_sheet(this.UsersTable)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, data, 'data')
+      /* generate file and send to client */
+      XLSX.writeFile(wb,'users.xlsx')
+		},
     async handleDelete (scope = -1) {
       await this.cancel(scope)
       await this.$store
