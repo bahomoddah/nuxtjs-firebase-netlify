@@ -1,6 +1,10 @@
 * {
   font-family: "jaz_bold", "Droid Arabic Kufi", sans-serif;
 }
+body {
+  padding: 0;
+  margin: 0;
+}
 .rtl {
   direction: rtl !important;
 }
