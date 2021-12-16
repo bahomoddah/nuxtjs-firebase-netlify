@@ -3,7 +3,7 @@
     <div class="header-nav rtl">
       <span>
         <nuxt-link to="/" :class="{ activeLink: activeLink === '/' }" class="btnLink">
-          <span class="el-submenu-text">رضاااكم</span>
+          <span class="el-submenu-text">رضاكم</span>
         </nuxt-link>
         <nuxt-link to="/users" :class="{ activeLink: activeLink === '/users' }" class="btnLink">
           <span class="el-submenu-text">المستخدمين</span>
@@ -21,7 +21,7 @@
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="email">
-                {{ user.email }}
+                {{ user.displayName ? user.displayName : user.email }}
             </el-dropdown-item>
             <el-dropdown-item command="change_password">
               نسيت كلمة المرور
@@ -59,12 +59,7 @@ export default {
     },
     async handleCommand (command) {
       if (command === 'logout') {
-        this.$fire.auth.signOut().then(() => {
-          this.$store.commit("SET_USER", null);
-          this.$router.push({
-            path: "/login",
-          });
-        });
+        this.$store.dispatch('logout')
       } else if (command === 'change_password') {
         this.$fire.auth.sendPasswordResetEmail(this.user.email)
       }
