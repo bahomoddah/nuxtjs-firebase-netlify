@@ -30,7 +30,7 @@
           />
         </el-form-item>
 
-        <div class="flex" style="text-align: center;">
+        <div class="flex" style="text-align: center">
           <el-button
             :loading="loading"
             class="login-btn animated text-uppercase"
@@ -51,10 +51,6 @@ export default {
   data() {
     return {
       loading: false,
-      alert: {
-        message: "",
-        type: "",
-      },
       form: {
         email: "",
         password: "",
@@ -85,85 +81,23 @@ export default {
   computed: {},
   methods: {
     onSubmit(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate( async (valid) => {
         if (valid) {
           this.loading = true;
-          // login
-          this.login();
+          await this.$store
+            .dispatch('login', { ...this.form })
+            .then(() => {
+              console.log('52225');         
+              this.loading = false;
+            })
+            .catch((e) => {
+              this.loading = false;
+              console.log(e);
+            });
         }
         return false;
       });
     },
-    async login() {
-      let type = "";
-      let message = "";
-      await this.$fire.auth.signInWithEmailAndPassword(
-          this.form.email,
-          this.form.password
-        )
-      .then(() => {
-        type = 'success'
-        message = 'login_s'
-        this.showAlert(type, message)
-        this.$router.push({
-          path: '/',
-        })
-      })
-      .catch(e => {
-        console.log(e)
-        type = 'error'
-        message = e.response.data.message
-        this.showAlert(type, message)
-      })
-      this.loading = false
-    },
-    showAlert(type, message) {
-      this.$message({
-        showClose: true,
-        message,
-        type,
-      });
-    },
-    ddd() {
-      
-      // await this.$fire.firestore.collection('users').doc(`${123456}`).get()
-      // .then((dd) => {
-      //   console.log('ccc', dd.data());
-
-      // })
-      
-      // await this.$fire.auth.signInWithEmailAndPassword(
-      //     this.form.email,
-      //     this.form.password
-      //   ).then((sec) => {
-      //   //   console.log('ccc', sec.user);
-      //   //   this.$fire.auth.createUserWithEmailAndPassword(
-      //   //   'mm@m.com',
-      //   //   '123456'
-      //   // ).then((sec) => {
-      //     console.log('ccc', sec.user);
-      //     this.$fire.firestore.collection('users').doc(`${ 55}`).set({
-      //         name: "Alawan",
-      //         password: "52432",
-      //         type: "org",
-      //         user_id: "25468"
-      //     })
-      //   // })
-      //   })
-      // .then(() => {
-      //   type = 'success'
-      //   message = this.$t('register.r.login_s')
-      //   this.showAlert(type, message)
-      //   this.$router.push(this.localePath({ name: 'index' }))
-      // })
-      // .catch(e => {
-      //   console.log(e)
-      //   type = 'error'
-      //   message = e.response.data.message
-      //   this.showAlert(type, message)
-      // })
-      // this.loading = false
-    }
   },
 };
 </script>
