@@ -72,6 +72,10 @@ export default {
       firestore: true
     }
   },
+  server: {
+    port: 5000,
+    host: '0.0.0.0'
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
