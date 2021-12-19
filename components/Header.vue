@@ -11,6 +11,9 @@
         <nuxt-link to="/orgs" :class="{ activeLink: activeLink === '/orgs' }" class="btnLink">
           <span class="el-submenu-text">الجهات</span>
         </nuxt-link>
+        <nuxt-link to="/surveys" :class="{ activeLink: activeLink === '/surveys' }" class="btnLink">
+          <span class="el-submenu-text">الاستبيانات</span>
+        </nuxt-link>
       </span>
       <span>
         <el-dropdown @command="handleCommand">
@@ -23,9 +26,9 @@
             <el-dropdown-item command="email">
                 {{ user.displayName ? user.displayName : user.email }}
             </el-dropdown-item>
-            <el-dropdown-item command="change_password">
+            <!-- <el-dropdown-item command="change_password">
               نسيت كلمة المرور
-            </el-dropdown-item>
+            </el-dropdown-item> -->
             <el-dropdown-item command="logout" divided style="color: red;">
               تسجيل الخروج
             </el-dropdown-item>
