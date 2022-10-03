@@ -36,7 +36,7 @@
             class="login-btn animated text-uppercase"
             @click="onSubmit('form')"
           >
-            تسجيل الدخول
+            تسجيل الدخول Now
           </el-button>
         </div>
       </el-form>
