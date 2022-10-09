@@ -1,23 +1,17 @@
 <template>
   <section class="section rtl">
     <div class="header flex">
-      <h1 class="mr-15">
-        قائمة المستخدمين
+      <h1 class="fontColor">
+        <fa icon="users" class="ml-5" />المستخدمين
       </h1>
-      <h1>
-        <el-button type="primary" plain class="mr-25" @click="handleCreate()">
+      <span class="display">
+        <el-button class="mr-25 btn-add" :disabled="!isAdmin" @click="handleCreate()">
           <span class="flex">
-            <img width="20" src="~/assets/images/users_w1.svg">
+            <fa icon="user-plus" class="ml-5" />
             <span class="p-5">إضافة مستخدم</span>
           </span>
         </el-button>
-        <el-button type="primary" plain class="mr-25" @click="exportUsers">
-          <span class="flex">
-            <img width="20" src="~/assets/images/users_w1.svg">
-            <span class="p-5">تصدير</span>
-          </span>
-        </el-button>
-      </h1>
+      </span>
     </div>
     <el-row :gutter="20">
       <el-col class="desktop-card">
@@ -36,7 +30,7 @@
                 prop="email"
                 label="الإيميل"
               />
-              <el-table-column label="">
+              <el-table-column v-if="isAdmin" label="الأوامر">
                 <template slot-scope="scope">
                   <el-button
                     size="mini"
@@ -46,13 +40,13 @@
                     <i class="el-icon-edit-outline" />
                   </el-button>
                   <el-popover :ref="`popover-${scope.$index}`" placement="bottom" width="160">
-                    <p>تأكيد الحذف؟</p>
-                    <div style="text-align: right; margin: 0">
-                      <el-button size="mini" type="text" @click="cancel(scope)">
-                        إالغاء
-                      </el-button>
+                    <p style="direction: rtl">هل تريد تأكيد الحذف؟</p>
+                    <div style="text-align: left; margin: 0">
                       <el-button type="primary" size="mini" @click.native.prevent="handleDelete(scope)">
                         تأكيد
+                      </el-button>
+                      <el-button size="mini" type="text" @click="cancel(scope)">
+                        إلغاء
                       </el-button>
                     </div>
                     <el-button slot="reference" size="mini" icon="el-icon-delete" type="danger" />
@@ -75,9 +69,17 @@
 </template>
 
 <script>
-import XLSX from 'xlsx'
 export default {
   name: 'Users',
+  head: {
+    title: 'رضاكم - المستخدمين'
+  },
+  middleware({ store, redirect }) {
+    // If the user is not admin
+    if (!store.getters.isAdmin) {
+      return redirect('/')
+    }
+  },
   data () {
     return {
       popoverVisible: false,
@@ -97,12 +99,12 @@ export default {
     },
     UsersTable() {
       return this.users.users
+    },
+    isAdmin() {
+      return this.$store.getters.isAdmin
     }
   },
   methods: {
-    usersExport () {
-      this.$store.dispatch('usersExport')
-    },
     cancel (scope) {
       scope._self.$refs[`popover-${scope.$index}`].doClose()
     },
@@ -119,22 +121,15 @@ export default {
         name: '',
         email: '',
         password: '',
-        is_active: false
+        allow_add: true,
+        allow_export: true,
+        allow_print: true
       }
       this.modalTitle = 'إضافة مستخدم جديد'
     },
     isInfoModalClosed (payload) {
       payload.value === true ? (this.update_info_dialog = false) : true
-      // payload.clickedBtn === 'save' ? this.fetch() : ''
     },
-    exportUsers() {
-			/* convert state to workbook */
-      const data = XLSX.utils.json_to_sheet(this.UsersTable)
-      const wb = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(wb, data, 'data')
-      /* generate file and send to client */
-      XLSX.writeFile(wb,'users.xlsx')
-		},
     async handleDelete (scope = -1) {
       await this.cancel(scope)
       await this.$store

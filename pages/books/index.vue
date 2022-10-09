@@ -1,38 +1,44 @@
 <template>
   <section class="section rtl">
     <div class="header flex">
-      <h1 class="mr-15">
-        قائمة الجهات
+      <h1 class="fontColor">
+        <fa icon="books" class="ml-5" />الكتب
       </h1>
-      <h1>
-        <el-button type="primary" plain class="mr-25" @click="handleCreate()">
+      <span class="display">
+        <el-button class="mr-25 btn-add" :disabled="!isAdmin" @click="handleCreate()">
           <span class="flex">
-            <img width="20" src="~/assets/images/orgs_w1.svg">
-            <span class="p-5">إضافة جهة</span>
+            <fa icon="user-plus" class="ml-5" />
+            <span class="p-5">إضافة كتاب</span>
           </span>
         </el-button>
-        
-        <!-- <input id="upload" type="file" class="file-input" accept=".xlsx, .xls" @change="importExcel" /> -->
-      </h1>
+      </span>
     </div>
     <el-row :gutter="20">
       <el-col class="desktop-card">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
             <el-table
-              :data="OrganizationsTable"
+              :data="BooksTable"
               style="width: 100%"
               class="pointer"
             >
               <el-table-column
                 prop="name"
-                label="اسم الجهة"
+                label="اسم الكتاب"
               />
               <el-table-column
-                prop="email"
-                label="الإيميل"
+                prop="author"
+                label="المؤلف"
               />
-              <el-table-column label="">
+              <el-table-column
+                prop="pages"
+                label="عدد الصفحات"
+              />
+              <el-table-column
+                prop="imgUrl"
+                label="الصورة"
+              />
+              <el-table-column v-if="isAdmin" label="الأوامر">
                 <template slot-scope="scope">
                   <el-button
                     size="mini"
@@ -42,13 +48,13 @@
                     <i class="el-icon-edit-outline" />
                   </el-button>
                   <el-popover :ref="`popover-${scope.$index}`" placement="bottom" width="160">
-                    <p>تأكيد الحذف؟</p>
-                    <div style="text-align: right; margin: 0">
-                      <el-button size="mini" type="text" @click="cancel(scope)">
-                        إالغاء
-                      </el-button>
+                    <p style="direction: rtl">هل تريد تأكيد الحذف؟</p>
+                    <div style="text-align: left; margin: 0">
                       <el-button type="primary" size="mini" @click.native.prevent="handleDelete(scope)">
                         تأكيد
+                      </el-button>
+                      <el-button size="mini" type="text" @click="cancel(scope)">
+                        إلغاء
                       </el-button>
                     </div>
                     <el-button slot="reference" size="mini" icon="el-icon-delete" type="danger" />
@@ -60,11 +66,10 @@
         </el-card>
       </el-col>
     </el-row>
-    <User
+    <Book
       :dialog-form-visible="update_info_dialog"
-      :user="modalDate"
+      :book="modalData"
       :title="modalTitle"
-      type="org"
       @closeModal="isInfoModalClosed"
     />
   </section>
@@ -72,32 +77,41 @@
 
 <script>
 export default {
-  name: 'Organizations',
+  name: 'Books',
+  head: {
+    title: 'الكتب'
+  },
+  middleware({ store, redirect }) {
+    // If the book is not admin
+    if (!store.getters.isAdmin) {
+      return redirect('/')
+    }
+  },
   data () {
     return {
       popoverVisible: false,
       modalTitle: '',
-      modalDate: {},
+      modalData: {},
       update_info_dialog: false
     }
   },
   async fetch ({ store, params }) {
-    if (store.state.users.orgs === undefined) {
-      await store.dispatch('fetchUsers')
+    if (store.state.books.books === undefined) {
+      await store.dispatch('fetchBooks')
     }
   },
   computed: {
-    users () {
-      return this.$store.state.users
+    books () {
+      return this.$store.state.books
     },
-    OrganizationsTable() {
-      return this.users.orgs
+    BooksTable() {
+      return this.books
+    },
+    isAdmin() {
+      return this.$store.getters.isAdmin
     }
   },
   methods: {
-    OrganizationsExport () {
-      this.$store.dispatch('OrgsExport')
-    },
     cancel (scope) {
       scope._self.$refs[`popover-${scope.$index}`].doClose()
     },
@@ -106,7 +120,7 @@ export default {
       this.modalData = {
         ...row
       }
-      this.modalTitle = 'تحديث بيانات الجهة'
+      this.modalTitle = 'تحديث بيانات المستخدم'
     },
     handleCreate () {
       this.update_info_dialog = true
@@ -114,56 +128,26 @@ export default {
         name: '',
         email: '',
         password: '',
-        is_active: false
+        allow_add: true,
+        allow_export: true,
+        allow_print: true
       }
-      this.modalTitle = 'إضافة جهة جديدة'
+      this.modalTitle = 'إضافة مستخدم جديد'
     },
     isInfoModalClosed (payload) {
       payload.value === true ? (this.update_info_dialog = false) : true
-      // payload.clickedBtn === 'save' ? this.fetch() : ''
     },
-    // importExcel(e) {
-    //   console.log('dd', e);
-    //   const { files } = e.target
-    //   if (!files.length) {
-    //     return
-    //   } else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
-    //     return alert('The upload format is incorrect. Please upload xls or xlsx format')
-    //   }
-    //   const fileReader = new FileReader()
-    //   const excelData = []
-    //   fileReader.onload = ev => {
-    //     // try {
-    //     const data = ev.target.result
-    //     const workbook = XLSX.read(data, {
-    //       type: 'binary'
-    //     })
-    //     const wsname = workbook.SheetNames[0] // Take the first sheet，wb.SheetNames[0] :Take the name of the first sheet in the sheets
-    //     const ws = XLSX.utils.sheet_to_json(workbook.Sheets[wsname]) // Generate JSON table content，wb.Sheets[Sheet名]    Get the data of the first sheet
-    //     // Edit data
-    //     for (let i = 0; i < ws.length; i++) {
-    //       excelData.push(ws[i])
-    //     }
-    //     console.log('data', excelData);
-    //     // } catch (e) {
-    //     //   return alert('Read failure!')
-    //     // }
-    //   }
-    //   fileReader.readAsBinaryString(files[0])
-    //   const input = document.getElementById('upload')
-    //   input.value = ''
-    // },
     async handleDelete (scope = -1) {
       await this.cancel(scope)
       await this.$store
-        .dispatch('deleteUser', scope.row.user_id)
+        .dispatch('deleteBook', scope.row.book_id)
         .then(async () => {
           await this.fetch()
         })
         .catch(e => console.log(e))
     },
     fetch (page_num = 1) {
-      this.$store.dispatch('fetchUsers')
+      this.$store.dispatch('fetchBooks')
     }
   }
 }

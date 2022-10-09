@@ -1,5 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap");
 * {
-  font-family: "jaz_bold", "Droid Arabic Kufi", sans-serif;
+  font-family: "Tajawal", sans-serif;
 }
 body {
   padding: 0;
@@ -16,8 +17,9 @@ body {
   padding: 0 0px 0 10px;
 }
 .section {
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 10px 30px;
 }
 
 .el-dialog__headerbtn {
@@ -30,9 +32,12 @@ body {
 }
 
 .required {
-  color: #F56C6C;
+  color: #f56c6c;
   color: red;
 }
 .el-dialog__footer {
   text-align: left;
+}
+.ml-5 {
+  margin-left: 5px;
 }

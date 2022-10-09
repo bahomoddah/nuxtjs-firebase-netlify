@@ -11,12 +11,34 @@
       <el-form ref="form" :model="form" :rules="rules" class="user_form">
         <el-row class="flex" :gutter="20">
           <el-col :span="24">
-            <div class="mb-10 mt-10">
-              <span>الاسم</span>
+            <div class="mb-10">
+              <span><fa icon="book" class="ml-5" /> اسم الكتاب</span>
               <span class="required">*</span>
             </div>
-            <el-form-item prop="name">
-              <el-input v-model="form.name" placeholder="أكتب الاسم" />
+            <el-form-item prop="required">
+              <el-input v-model="form.name" placeholder="أكتب اسم الكتاب" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row class="flex" :gutter="20">
+          <el-col :span="24">
+            <div class="mb-10">
+              <span><fa icon="book" class="ml-5" /> المؤلف</span>
+              <span class="required">*</span>
+            </div>
+            <el-form-item prop="required">
+              <el-input v-model="form.author" placeholder="أكتب اسم المؤلف" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row class="flex" :gutter="20">
+          <el-col :span="24">
+            <div class="mb-10">
+              <span><fa icon="book" class="ml-5" /> عدد الصفحات</span>
+              <span class="required">*</span>
+            </div>
+            <el-form-item prop="required">
+              <el-input-number v-model="form.pages" placeholder="أكتب عدد الصفحات" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -24,12 +46,12 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeModal"> إلغاء </el-button>
         <el-button
-          class="btn_add"
+          class="btn-add"
           :loading="loading"
           type="primary"
           @click="clickedBtn = 'save'
           onSubmit('form')"
-          >حفظ</el-button
+          ><fa icon="save" /> حفظ</el-button
         >
       </span>
     </el-dialog>
@@ -37,19 +59,19 @@
 </template>
 <script>
 export default {
-  name: "UserManage",
+  name: "BookModal",
   props: {
     dialogFormVisible: {
       type: Boolean,
       default: false,
     },
-    survey_question: {
+    book: {
       type: Object,
       default: () => {},
     },
     title: {
       type: String,
-      default: "تحديث بيانات المستخدم",
+      default: "تحديث بيانات الكتاب",
     },
   },
   data() {
@@ -60,6 +82,13 @@ export default {
       form: {},
       old_form: {},
       rules: {
+        required: [
+          {
+            required: true,
+            message: `الحقل مطلوب`,
+            trigger: "blur",
+          },
+        ],
       },
     };
   },
@@ -68,16 +97,16 @@ export default {
       return this.dialogFormVisible;
     },
     isNew() {
-      return !this.survey_question
+      return !this.book.book_id
     }
   },
   watch: {
-    survey_question() {
+    book() {
       this.form = {
-        ...this.survey_question,
+        ...this.book,
       };
       this.old_form = {
-        ...this.survey_question,
+        ...this.book,
       };
     },
   },
@@ -89,9 +118,10 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          let action = this.isNew  ? 'addUser' : 'editUser'
+          this.loading = true
+          let action = this.isNew  ? 'addBook' : 'editBook'
             await this.$store
-              .dispatch(action, { ...this.form, type: this.type })
+              .dispatch(action, this.form)
               .then(() => {
                 this.closeModal();
               })
@@ -104,4 +134,7 @@ export default {
 };
 </script>
 <style scoped>
+.mb-10 {
+  margin-bottom: 10px;
+}
 </style>

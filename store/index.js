@@ -1,23 +1,33 @@
 import { Message } from "element-ui";
 export const state = () => ({
   user: null,
+  userDetails: null,
   users: {},
+  books: [],
+  is_first_load: true
 });
 export const mutations = {
   SET_USER(state, user) {
     state.user = user;
   },
+  GET_USER_DETAILS(state, user) {
+    state.userDetails = user;
+  },
   SET_USERS(state, users) {
     state.users.users = users;
   },
-  SET_ORGS(state, orgs) {
-    state.users.orgs = orgs;
-  },
   ADD_USER(state, user) {
-    user.type == "org"
-      ? state.users.orgs.push(user)
-      : state.users.users.push(user);
+    state.users.users.push(user);
   },
+  SET_FIRST_LOAD(state, payload) {
+    state.is_first_load = payload
+  },
+  SET_BOOKS(state, books) {
+    state.books = books;
+  },
+  ADD_BOOK(state, book) {
+    state.books.push(book);
+  }
 };
 export const actions = {
   alert({}, data) {
@@ -41,8 +51,9 @@ export const actions = {
   async login({ commit, dispatch }, payload) {
     await this.$fire.auth
       .signInWithEmailAndPassword(payload.email, payload.password)
-      .then((userData) => {
-        console.log('55');
+      .then((userData) => {            
+        localStorage.setItem('email', payload.email)
+        localStorage.setItem('password', payload.password)
         this.$router.push({
           path: "/",
         });
@@ -66,8 +77,9 @@ export const actions = {
         commit("SET_USER", null);
         // Direction to login page
         this.$router.push({
-          path: "/login",
+          path: "/",
         });
+        localStorage.clear()
         dispatch("alert", {
           msg: "تم تسجيل الخروج بنجاح",
           type: "success",
@@ -81,11 +93,12 @@ export const actions = {
         });
       });
   },
-  async onAuthStateChanged({ commit }, { authUser }) {
+  async onAuthStateChanged({ commit, dispatch }, { authUser }) {
     if (!authUser) {
       commit("SET_USER", null);
+      commit("GET_USER_DETAILS", null);      
       this.$router.push({
-        path: "/login",
+        path: "/",
       });
     } else {
       const { uid, email, displayName } = authUser;
@@ -93,9 +106,10 @@ export const actions = {
         email,
         displayName
       });
+      dispatch('getUserDetails', { user_id: uid } )
     }
   },
-  async fetchUsers({ commit, dispatch }, payload) {
+  async fetchUsers({ commit, dispatch }) {
     await this.$fire.firestore
       .collection("users")
       .get()
@@ -104,19 +118,28 @@ export const actions = {
         let orgs = [];
         res.docs.forEach((doc) => {
           let user = doc.data();
-          if (user.type == "org") {
-            orgs.push({ ...user });
-          } else {
-            users.push({ ...user });
-          }
+          users.push({ ...user });
         });
-        commit("SET_ORGS", orgs);
         commit("SET_USERS", users);
-        dispatch("alert", {
-          msg: "تم جلب البيانات بنجاح",
-          type: "success",
-        });
+        // dispatch("alert", {
+        //   msg: "تم جلب البيانات بنجاح",
+        //   type: "success",
+        // });
       });
+  },
+  async relogin() {
+    // await this.$fire.auth.signOut()
+    await this.$fire.auth
+    .signInWithEmailAndPassword(localStorage.getItem('email'), localStorage.getItem('password'))
+  },
+  async getUserDetails({ commit, dispatch }, payload) {
+    this.$fire.firestore
+      .collection("users")
+      .doc(payload.user_id)
+      .get()
+      .then((res) => {
+        commit("GET_USER_DETAILS", res.data());
+      })
   },
   async addNewUser({ dispatch }, payload) {
     this.$fire.firestore.collection("users").add({
@@ -138,6 +161,9 @@ export const actions = {
           name: payload.name,
           email: payload.email,
           type: payload.type,
+          allow_add: payload.allow_add,
+          allow_export: payload.allow_export,
+          allow_print: payload.allow_print,
           user_id: userData.user.uid,
         };
         this.$fire.firestore
@@ -148,6 +174,8 @@ export const actions = {
           })
           .then(() => {
             commit("ADD_USER", user);
+            // to logout from this user and login with the admin email
+            dispatch("relogin");
             dispatch("alert", {
               msg: "تمت الإضافة بنجاح",
               type: "success",
@@ -161,9 +189,13 @@ export const actions = {
       .doc(payload.user_id)
       .update({
         name: payload.name,
+        email: payload.email,
+        allow_add: payload.allow_add,
+        allow_export: payload.allow_export,
+        allow_print: payload.allow_print
       })
-      .then((sec) => {
-        console.log("ss", sec);
+      .then(() => {
+        dispatch('fetchUsers')
         dispatch("alert", {
           msg: "تم تحديث البيانات بنجاح",
           type: "success",
@@ -176,16 +208,85 @@ export const actions = {
       .doc(user_id)
       .delete()
       .then((sec) => {
-        console.log("ss", sec);
         dispatch("alert", {
           msg: "تم الحذف بنجاح",
           type: "success",
         });
       });
   },
+  async fetchBooks({ commit, dispatch }) {
+    await this.$fire.firestore
+      .collection("books")
+      .get()
+      .then((res) => {
+        let books = [];
+        res.docs.forEach((doc) => {
+          let book = doc.data();
+          books.push({ ...book });
+        });
+        commit("SET_BOOKS", books);
+        // dispatch("alert", {
+        //   msg: "تم جلب البيانات بنجاح",
+        //   type: "success",
+        // });
+      });
+  },
+  async addBook({ commit, dispatch }, payload) {
+        const book = {
+          name: payload.name,
+        };
+        await this.$fire.firestore
+          .collection("books")
+          .doc(book.book_id)
+          .set({
+            ...book,
+          })
+          .then(() => {
+            commit("ADD_BOOK", book);
+            dispatch("alert", {
+              msg: "تمت الإضافة بنجاح",
+              type: "success",
+            });
+          });
+  },
+  async editBook({ commit, dispatch }, payload) {
+    await this.$fire.firestore
+      .collection("books")
+      .doc(payload.book_id)
+      .update({
+        name: payload.name,
+      })
+      .then(() => {
+        dispatch('fetchBooks')
+        dispatch("alert", {
+          msg: "تم تحديث البيانات بنجاح",
+          type: "success",
+        });
+      });
+  },
+  async deleteBook({ dispatch }, book_id) {
+    await this.$fire.firestore
+      .collection("books")
+      .doc(book_id)
+      .delete()
+      .then((sec) => {
+        dispatch("alert", {
+          msg: "تم الحذف بنجاح",
+          type: "success",
+        });
+      });
+  }
 };
 export const getters = {
   getUser(state) {
     return state.user;
   },
+  isAdmin(state) {
+    const type = state.userDetails ? state.userDetails.type : ''
+    return !!state.user && type !== 'org'
+  },
+  allowAdd(state) {
+    const user = state.userDetails || {}
+    return user.type == 'org' ? user.allow_add : true
+  }
 };

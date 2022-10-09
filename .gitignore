@@ -88,3 +88,8 @@ sw.*
 
 # Vim swap files
 *.swp
+
+#firebase auth
+static/firebase-auth-sw.js
+.firebase/hosting.ZGlzdA.cache
+package-lock.json
