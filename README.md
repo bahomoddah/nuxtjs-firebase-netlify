@@ -1,4 +1,4 @@
-# test-nuxt
+# mybooks-list
 
 # Deploy to Firebase
 
@@ -7,3 +7,8 @@
 2- nuxt generate
 3- firebase deploy --only hosting
  ( npm run deploy)
+
+
+ # Website in Netlify
+
+ https://mybooks-list.netlify.app/
