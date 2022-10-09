@@ -1,5 +1,12 @@
 const fs = require('fs')
 export default {
+  // Environment variables
+  env: {
+    firebaseApiKeyEnv: process.env.FIREBASE_API_KEY
+  },
+  publicRuntimeConfig: {
+    firebaseApiKeyConfig: process.env.FIREBASE_API_KEY
+  },
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
   target: 'static',
@@ -76,7 +83,10 @@ export default {
   firebase: {
     config: {
       // Later put FIREBASE_API_KEY in .env if necessary,
-      apiKey: process.env.FIREBASE_API_KEY,
+      apiKey: 
+        process.env.FIREBASE_API_KEY ||
+        process.env.firebaseApiKeyEnv ||
+        this.$config.firebaseApiKeyConfig,
       authDomain: 'test-nuxt-63bd6.firebaseapp.com',
       projectId: 'test-nuxt-63bd6',
       storageBucket: 'test-nuxt-63bd6.appspot.com',
