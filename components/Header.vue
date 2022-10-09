@@ -86,7 +86,7 @@ export default {
 <style>
 .header-nav {
   background-color: #e7e4ed;
-  color: #12044d;
+  color: #2e495e;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -103,13 +103,13 @@ export default {
 }
 .activeLink {
   color: #ffffff !important;
-  background-color: #12044d;
+  background-color: #2e495e;
 }
 .logo {
   margin-top: 12px;
 }
 .linkStyle {
-  color: #12044d !important
+  color: #2e495e !important
 }
 @media (max-width: 768px) {
   .header-nav {

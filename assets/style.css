@@ -25,11 +25,11 @@ a {
 .btn-add:focus,
 .btn-add:target {
   color: #ffffff;
-  background: #12044d;
-  border-color: #12044d;
+  background: #2e495e;
+  border-color: #2e495e;
 }
 .btn-add:hover {
-  color: #12044d;
+  color: #2e495e;
   background: #b69d2f;
   border-color: #b69d2f;
 }
@@ -44,8 +44,8 @@ a {
 }
 .btn-export:hover {
   color: #b69d2f;
-  background: #12044d;
-  border-color: #12044d;
+  background: #2e495e;
+  border-color: #2e495e;
 }
 .display {
   float: left;
@@ -59,14 +59,12 @@ a {
   /* background: #2e495e; */
   min-height: calc(100vh - 75px);
 }
-/* a > i,
-a > .email {
+a {
   color: #2e495e;
 }
-a:hover > i,
-a:hover > .email {
-  color: #f7820d;
-} */
+a:hover {
+  color: #108776;
+}
 .divStyle {
   margin-top: 5rem;
   /* color: #ffffff; */
@@ -140,11 +138,31 @@ a:hover > .email {
 }
 
 
+.login-dialog .el-dialog {
+  max-width: 400px !important;
+  border-radius: 16px !important;
+  width: 35% !important;
+  border-radius: 16px;
+  border: solid 1.1px #e6e9ee;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0,15%);
+  animation: slid 0.3s ease-in-out 0s alternate both !important;
+}
+@keyframes slid {
+  from {
+    transform: translateY(50%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
 .hero__header {
   font-size: 5rem;
   margin: auto;
   margin-bottom: 0px;
-  color: #2e495e;
+  color: #108776;
 }
 @media (max-width: 991px) {
   .user-modal .el-dialog {
