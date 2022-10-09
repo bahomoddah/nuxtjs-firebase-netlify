@@ -20,13 +20,13 @@
         </el-col>
         <el-col :span="12" :xs="24" class="hero">
           <div class="divStyle">
-            <!-- <img
+            <img
               height="60"
               src="~/assets/images/tools/nuxtjs-firebase.png"
-            /><br /> -->
+            /><br />
             <p>مرحبا بكم في</p>
-            <h1 class="hero__header">لوحة التحكم</h1>
-            <p> تساعدك في عمل موقع بالتقنات الآتية </p>
+            <h1 class="hero__header">قائمة الكتب</h1>
+            <p> تم عمل الموقع بالتقنات الآتية </p>
             <p>Nuxt.js - Firebase - Element-ui - Netlify</p>
 
             <br />
@@ -38,33 +38,26 @@
                 >
               </nuxt-link>
             </el-button>
-            <el-button v-else class="mr-25">
-              <nuxt-link to="/login">
+            <el-button v-else class="mr-25" @click="update_info_dialog = true">
+              <!-- <nuxt-link to="/login"> -->
                 <span class="p-5 btn-login">
                   دخول <fa icon="arrow-alt-circle-left"
                 /></span>
-              </nuxt-link>
+              <!-- </nuxt-link> -->
             </el-button>
             <br /><br />
 
             <br class="showInSmallDevice" />
             <a href="mailto:bahomoddah@gmail.com">
               <fa icon="at" class="email" style="font-size: 16px;" />
-              <span class="email">bahomoddah@gmail.com</span>
-            </a>
-
-            <br />
-
-            <a @click="whatsApp" href="#" target="_blank" rel="noopener noreferrer">
-              <i class="fa fa-whatsapp" style="font-size: 16px"></i>
-              <span>034 751 770 00967</span>
+              <span>bahomoddah@gmail.com</span>
             </a>
 
             <br />
 
             <a href="https://github.com/bahomoddah" target="_blank">
               <i class="fa fa-github" style="font-size: 16px"></i>
-              <span>@bahomoddah</span>
+              <span>bahomoddah</span>
             </a>
           </div>
         </el-col>
@@ -103,6 +96,10 @@
         </el-col>
       </el-row>
     </div>
+    <Login
+      :dialog-form-visible="update_info_dialog"
+      @closeModal="isInfoModalClosed"
+    />
   </section>
 </template>
 
@@ -115,6 +112,7 @@ export default {
   data() {
     return {
       loading: false,
+      update_info_dialog: false
     };
   },
   computed: {
@@ -138,6 +136,9 @@ export default {
         })
       })
       observer.observe(document.querySelector(".container"))
+    },
+    isInfoModalClosed (payload) {
+      payload.value === true ? (this.update_info_dialog = false) : true
     }
   },
   mounted() {
