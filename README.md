@@ -7,3 +7,5 @@
 2- nuxt generate
 3- firebase deploy --only hosting
  ( npm run deploy)
+
+https://mybooks-list.netlify.app/
